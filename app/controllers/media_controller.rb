@@ -2,8 +2,10 @@
 
 # Controller for managing media associated with sessions.
 class MediaController < ApplicationController
+  before_action :set_session
+  before_action :set_medium, only: [:destroy]
+
   def create
-    @session = Session.find(params[:session_id])
     @playlist = @session.playlist || @session.create_playlist
     @media = @session.media.build(media_params.merge(session_id: @session.id))
 
@@ -14,7 +16,23 @@ class MediaController < ApplicationController
     end
   end
 
+  def destroy
+    @medium.destroy
+    respond_to do |format|
+      format.html { redirect_to @session, notice: 'Media was successfully removed.' }
+      format.json { head :no_content }
+    end
+  end
+
   private
+
+  def set_session
+    @session = Session.find(params[:session_id])
+  end
+
+  def set_medium
+    @medium = @session.playlist.media.find(params[:id])
+  end
 
   def media_params
     params.permit(:title, :url)

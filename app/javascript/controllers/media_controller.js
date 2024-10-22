@@ -2,15 +2,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["media"]
+  static targets = ["medium"]
 
   removeMedia(event) {
-    const mediaId = event.currentTarget.dataset.id
-    // Aquí puedes manejar la lógica para eliminar el medio
-    console.log(`Removing media with ID: ${mediaId}`)
-
-    // Lógica para eliminar el elemento de la vista
-    const listItem = event.currentTarget.closest('li')
-    listItem.remove()
+    event.preventDefault()
+    const mediumId = event.params.id
+    const mediumElement = document.getElementById(`medium-${mediumId}`)
+    if (mediumElement) {
+      mediumElement.remove()
+    }
   }
 }

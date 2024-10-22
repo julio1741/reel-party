@@ -26,9 +26,9 @@
       <% if @session.playlist.present? %>
         <ul class="list-group mt-3" id="queue">
           <% @session.playlist.media.each do |medium| %>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+            <li class="list-group-item d-flex justify-content-between align-items-center" id="medium-<%= medium.id %>">
               <strong><%= medium.title %></strong>: <%= medium.url %>
-              <button data-action="click->media#removeMedia" data-id="<%= medium.id %>" class="btn btn-danger btn-sm">Remove</button>
+              <%= button_to 'Remove', session_medium_path(@session, medium), method: :delete, remote: true, class: 'btn btn-danger btn-sm', data: { confirm: 'Are you sure?' } %>
             </li>
           <% end %>
         </ul>
