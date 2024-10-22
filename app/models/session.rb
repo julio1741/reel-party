@@ -1,3 +1,4 @@
 class Session < ApplicationRecord
-  has_many :media, dependent: :destroy
+  has_one :playlist
+  has_many :media, through: :playlist
 end

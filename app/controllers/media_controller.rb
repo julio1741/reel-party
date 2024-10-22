@@ -4,7 +4,8 @@
 class MediaController < ApplicationController
   def create
     @session = Session.find(params[:session_id])
-    @media = @session.media.build(media_params)
+    @playlist = @session.playlist || @session.create_playlist
+    @media = @session.media.build(media_params.merge(session_id: @session.id))
 
     if @media.save
       redirect_to session_path(@session), notice: 'Media added successfully.'

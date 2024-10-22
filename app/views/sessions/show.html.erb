@@ -1,28 +1,44 @@
 <!-- app/views/sessions/show.html.erb -->
-<h1>Session: <%= @session.host_name %></h1>
-<h4>Share this session ID: <%= @session.id %></h4>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Session: <%= @session.host_name %></h1>
+  <h4 class="text-center mb-4">Share this session ID: <%= @session.id %></h4>
 
-<h3>Add Media to the Queue</h3>
-<%= form_with(url: session_media_path(@session), local: true, html: { data: { controller: "media" } }) do |form| %>
-  <div class="mb-3">
-    <%= form.label :title, 'Media Title', class: 'form-label' %>
-    <%= form.text_field :title, class: 'form-control', required: true %>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h3 class="mb-4">Add Media to the Queue</h3>
+      <%= form_with(url: session_media_path(@session), local: true, html: { data: { controller: "media" } }) do |form| %>
+        <div class="mb-3">
+          <%= form.label :title, 'Media Title', class: 'form-label' %>
+          <%= form.text_field :title, class: 'form-control', required: true %>
+        </div>
+
+        <div class="mb-3">
+          <%= form.label :url, 'Media URL', class: 'form-label' %>
+          <%= form.text_field :url, class: 'form-control', required: true %>
+        </div>
+
+        <div class="text-center">
+          <%= form.submit 'Add to Queue', class: 'btn btn-success' %>
+        </div>
+      <% end %>
+
+      <h3 class="mt-5">Current Media in Queue</h3>
+      <% if @session.playlist.present? %>
+        <ul class="list-group mt-3" id="queue">
+          <% @session.playlist.media.each do |medium| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <strong><%= medium.title %></strong>: <%= medium.url %>
+              <button data-action="click->media#removeMedia" data-id="<%= medium.id %>" class="btn btn-danger btn-sm">Remove</button>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-center mt-3">No content in the queue yet.</p>
+      <% end %>
+
+      <div class="text-center mt-4">
+        <%= link_to 'Back to New Session', new_session_path, class: 'btn btn-secondary' %>
+      </div>
+    </div>
   </div>
-
-  <div class="mb-3">
-    <%= form.label :url, 'Media URL', class: 'form-label' %>
-    <%= form.text_field :url, class: 'form-control', required: true %>
-  </div>
-
-  <%= form.submit 'Add to Queue', class: 'btn btn-success' %>
-<% end %>
-
-<h3>Current Media in Queue</h3>
-<ul class="list-group mt-3" data-controller="media">
-  <% @media.each do |media| %>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <strong><%= media.title %></strong> - <%= media.url %>
-      <button data-action="click->media#removeMedia" data-id="<%= media.id %>" class="btn btn-danger btn-sm">Remove</button>
-    </li>
-  <% end %>
-</ul>
+</div>
