@@ -17,7 +17,8 @@ class SessionsController < ApplicationController
 
   def show
     @session = Session.find(params[:id])
-    @media = @session.media  # Obtén los medios asociados a la sesión
+    @new_media = Medium.new
+    @media = @session.media
   end
 
   private

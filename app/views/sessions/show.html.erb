@@ -1,0 +1,28 @@
+<!-- app/views/sessions/show.html.erb -->
+<h1>Session: <%= @session.host_name %></h1>
+<h4>Share this session ID: <%= @session.id %></h4>
+
+<h3>Add Media to the Queue</h3>
+<%= form_with(url: session_media_path(@session), local: true, html: { data: { controller: "media" } }) do |form| %>
+  <div class="mb-3">
+    <%= form.label :title, 'Media Title', class: 'form-label' %>
+    <%= form.text_field :title, class: 'form-control', required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :url, 'Media URL', class: 'form-label' %>
+    <%= form.text_field :url, class: 'form-control', required: true %>
+  </div>
+
+  <%= form.submit 'Add to Queue', class: 'btn btn-success' %>
+<% end %>
+
+<h3>Current Media in Queue</h3>
+<ul class="list-group mt-3" data-controller="media">
+  <% @media.each do |media| %>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <strong><%= media.title %></strong> - <%= media.url %>
+      <button data-action="click->media#removeMedia" data-id="<%= media.id %>" class="btn btn-danger btn-sm">Remove</button>
+    </li>
+  <% end %>
+</ul>
