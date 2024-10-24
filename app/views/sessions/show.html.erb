@@ -1,0 +1,57 @@
+<!-- app/views/sessions/show.html.erb -->
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Session: <%= @session.host_name %></h1>
+  <h4 class="text-center mb-4">Share this session ID: <%= @session.id %></h4>
+
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h3 class="mb-4">Add Media to the Playlist</h3>
+      <%= form_with(url: session_media_path(@session), local: true, html: { data: { controller: "media" } }) do |form| %>
+
+        <div class="mb-3">
+          <%= form.label :url, 'Media URL', class: 'form-label' %>
+          <%= form.text_field :url, class: 'form-control', required: true, pattern: "https?://.+" %>
+          <div class="invalid-feedback">
+            Please enter a valid URL.
+          </div>
+        </div>
+
+        <div class="text-center">
+          <%= form.submit 'Add to Playlist', class: 'btn btn-success' %>
+        </div>
+      <% end %>
+
+      <div id="current-media-container">
+        <div class="row justify-content-center mt-5">
+          <div class="col-md-8">
+            <div id="current-media-container" class="card">
+              <div class="card-body">
+                <h5 class="card-title">Currently Playing</h5>
+                <div id="current-media-content">
+                  <div id="media-player">
+                    Add some media to the playlist to get started!
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="mt-5">Current Media in Playlist</h3>
+      <% if @session.playlist.present? %>
+        <ul class="list-group mt-3" id="playlist" data-playlist-id="<%= @session.playlist.id %>">
+          <% @session.playlist.media.each do |medium| %>
+            <%= render medium %>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-center mt-3">No content in the queue yet.</p>
+      <% end %>
+
+      <div class="text-center mt-4">
+        <%= link_to 'Back to New Session', new_session_path, class: 'btn btn-secondary' %>
+      </div>
+    </div>
+  </div>
+</div>
