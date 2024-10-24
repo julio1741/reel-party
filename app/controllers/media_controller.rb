@@ -12,7 +12,10 @@ class MediaController < ApplicationController
     if @medium.save
       PlaylistChannel.broadcast_to(
         @playlist,
-        medium: render_to_string(partial: 'medium', locals: { medium: @medium })
+        {
+          action: 'add',
+          medium: render_to_string(partial: 'medium', locals: { medium: @medium })
+        }
       )
       redirect_to session_path(@session), notice: 'Media added successfully.'
     else
@@ -22,6 +25,7 @@ class MediaController < ApplicationController
 
   def destroy
     @medium.destroy
+    broadcast_removal
     respond_to do |format|
       format.html { redirect_to @session, notice: 'Media was successfully removed.' }
       format.json { head :no_content }
@@ -30,15 +34,26 @@ class MediaController < ApplicationController
 
   private
 
-  def set_session
-    @session = Session.find(params[:session_id])
-  end
+    def broadcast_removal
+      @playlist = @medium.playlist
+      PlaylistChannel.broadcast_to(
+        @playlist,
+        {
+          action: 'remove',
+          id: @medium.id
+        }
+      )
+    end
 
-  def set_medium
-    @medium = @session.playlist.media.find(params[:id])
-  end
+    def set_session
+      @session = Session.find(params[:session_id])
+    end
 
-  def media_params
-    params.permit(:title, :url)
-  end
+    def set_medium
+      @medium = @session.playlist.media.find(params[:id])
+    end
+
+    def media_params
+      params.permit(:title, :url)
+    end
 end

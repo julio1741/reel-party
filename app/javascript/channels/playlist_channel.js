@@ -12,9 +12,17 @@ import consumer from "./consumer"
       },
       received(data) {
         console.log(data)
-        // Insertar el nuevo medium en la lista
-        const mediaList = document.getElementById('playlist')
-        mediaList.insertAdjacentHTML('beforeend', data.medium)
+        if (data.action === 'remove') {
+          const mediumElement = document.getElementById(`medium-${data.id}`)
+          if (mediumElement) {
+            mediumElement.remove()
+          }
+        }
+        if (data.action === 'add') {
+          // Insertar el nuevo medium en la lista
+          const mediaList = document.getElementById('playlist')
+          mediaList.insertAdjacentHTML('beforeend', data.medium)
+        }
       }
     })
   }
