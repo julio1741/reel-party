@@ -21,6 +21,12 @@ import consumer from "./consumer"
         if (data.action === 'add') {
           // Insertar el nuevo medium en la lista
           const mediaList = document.getElementById('playlist')
+          var mediaPlayer = document.getElementById('media-player')
+          if (mediaPlayer && data.embed_code) {
+            mediaPlayer.innerHTML = data.embed_code
+          } else {
+            mediaPlayer.innerHTML = "Hubo un problema al cargar el video"
+          }       
           mediaList.insertAdjacentHTML('beforeend', data.medium)
         }
       }

@@ -15,12 +15,12 @@ class MediaController < ApplicationController
         @playlist,
         {
           action: 'add',
-          medium: render_to_string(partial: 'medium', locals: { medium: @medium })
+          medium: render_to_string(partial: 'medium', locals: { medium: @medium }),
+          embed_code: @medium.embed_code
         }
       )
-      redirect_to session_path(@session), notice: 'Media added successfully.'
     else
-      redirect_to session_path(@session), alert: 'Failed to add media.'
+      flash[:error] = @medium.errors.full_messages.join(', ')
     end
   end
 
