@@ -5,7 +5,7 @@
 
   <div class="row justify-content-center">
     <div class="col-md-8">
-      <h3 class="mb-4">Add Media to the Queue</h3>
+      <h3 class="mb-4">Add Media to the Playlist</h3>
       <%= form_with(url: session_media_path(@session), local: true, html: { data: { controller: "media" } }) do |form| %>
         <div class="mb-3">
           <%= form.label :title, 'Media Title', class: 'form-label' %>
@@ -18,18 +18,15 @@
         </div>
 
         <div class="text-center">
-          <%= form.submit 'Add to Queue', class: 'btn btn-success' %>
+          <%= form.submit 'Add to Playlist', class: 'btn btn-success' %>
         </div>
       <% end %>
 
-      <h3 class="mt-5">Current Media in Queue</h3>
+      <h3 class="mt-5">Current Media in Playlist</h3>
       <% if @session.playlist.present? %>
-        <ul class="list-group mt-3" id="queue">
+        <ul class="list-group mt-3" id="playlist" data-playlist-id="<%= @session.playlist.id %>">
           <% @session.playlist.media.each do |medium| %>
-            <li class="list-group-item d-flex justify-content-between align-items-center" id="medium-<%= medium.id %>">
-              <strong><%= medium.title %></strong>: <%= medium.url %>
-              <%= button_to 'Remove', session_medium_path(@session, medium), method: :delete, remote: true, class: 'btn btn-danger btn-sm', data: { confirm: 'Are you sure?' } %>
-            </li>
+            <%= render medium %>
           <% end %>
         </ul>
       <% else %>

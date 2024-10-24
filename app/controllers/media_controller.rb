@@ -7,9 +7,13 @@ class MediaController < ApplicationController
 
   def create
     @playlist = @session.playlist || @session.create_playlist
-    @media = @session.media.build(media_params.merge(session_id: @session.id))
+    @medium = @session.media.build(media_params.merge(session_id: @session.id))
 
-    if @media.save
+    if @medium.save
+      PlaylistChannel.broadcast_to(
+        @playlist,
+        medium: render_to_string(partial: 'medium', locals: { medium: @medium })
+      )
       redirect_to session_path(@session), notice: 'Media added successfully.'
     else
       redirect_to session_path(@session), alert: 'Failed to add media.'
