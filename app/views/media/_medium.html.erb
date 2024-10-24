@@ -1,4 +1,4 @@
 <li class="list-group-item d-flex justify-content-between align-items-center" id="medium-<%= medium.id %>">
-  <strong><%= medium.title %></strong>: <%= medium.url %>
+  <%= medium.url %>
   <%= button_to 'Remove', session_medium_path(@session, medium), method: :delete, remote: true, class: 'btn btn-danger btn-sm', data: { confirm: 'Are you sure?' } %>
 </li>

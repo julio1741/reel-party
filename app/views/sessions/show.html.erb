@@ -7,14 +7,13 @@
     <div class="col-md-8">
       <h3 class="mb-4">Add Media to the Playlist</h3>
       <%= form_with(url: session_media_path(@session), local: true, html: { data: { controller: "media" } }) do |form| %>
-        <div class="mb-3">
-          <%= form.label :title, 'Media Title', class: 'form-label' %>
-          <%= form.text_field :title, class: 'form-control', required: true %>
-        </div>
 
         <div class="mb-3">
           <%= form.label :url, 'Media URL', class: 'form-label' %>
-          <%= form.text_field :url, class: 'form-control', required: true %>
+          <%= form.text_field :url, class: 'form-control', required: true, pattern: "https?://.+" %>
+          <div class="invalid-feedback">
+            Please enter a valid URL.
+          </div>
         </div>
 
         <div class="text-center">

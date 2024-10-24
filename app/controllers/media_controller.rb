@@ -7,8 +7,9 @@ class MediaController < ApplicationController
 
   def create
     @playlist = @session.playlist || @session.create_playlist
-    @medium = @session.media.build(media_params.merge(session_id: @session.id))
-
+    platform = helpers.detect_platform(media_params[:url])
+    embed_code = helpers.generate_embed_code(platform, media_params[:url])
+    @medium = @session.media.build(media_params.merge(session_id: @session.id, embed_code: embed_code, title: platform))
     if @medium.save
       PlaylistChannel.broadcast_to(
         @playlist,
@@ -54,6 +55,6 @@ class MediaController < ApplicationController
     end
 
     def media_params
-      params.permit(:title, :url)
+      params.permit(:url)
     end
 end
