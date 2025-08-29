@@ -1,0 +1,17 @@
+
+services:
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0 -p 3100"
+    volumes:
+      - .:/app
+    ports:
+      - "3100:3100"
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    tty: true
+    stdin_open: true
+  redis:
+    image: redis:7

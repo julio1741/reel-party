@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_24_215939) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_29_202602) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_24_215939) do
     t.datetime "updated_at", null: false
     t.bigint "playlist_id", null: false
     t.text "embed_code"
+    t.integer "position", default: 0, null: false
+    t.string "status", default: "queued", null: false
+    t.string "added_by"
+    t.string "thumbnail_url"
+    t.string "display_title"
+    t.index ["playlist_id", "position"], name: "index_media_on_playlist_id_and_position"
+    t.index ["playlist_id", "status"], name: "index_media_on_playlist_id_and_status"
     t.index ["playlist_id"], name: "index_media_on_playlist_id"
     t.index ["session_id"], name: "index_media_on_session_id"
   end
