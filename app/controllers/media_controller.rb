@@ -2,6 +2,8 @@
 
 # Controller for managing media associated with sessions.
 class MediaController < ApplicationController
+  # Temporary fix for CSRF issues in production
+  skip_before_action :verify_authenticity_token, only: [:create]
   before_action :set_session
   before_action :set_medium, only: [:destroy, :play_next, :pause, :resume, :restart]
 

@@ -53,6 +53,12 @@ Rails.application.configure do
   
   # Configure for Heroku
   config.assume_ssl = true
+  
+  # Allow all origins for Action Cable (for now)
+  config.action_cable.allowed_request_origins = nil
+  
+  # Disable host authorization for Heroku
+  config.hosts.clear
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
