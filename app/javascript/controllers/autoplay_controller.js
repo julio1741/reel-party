@@ -5,12 +5,13 @@ export default class extends Controller {
   static values = { sessionId: Number }
 
   connect() {
-    console.log("Autoplay controller connected - VERSION 2.1", {
+    console.log("Autoplay controller connected - VERSION 2.2", {
       sessionId: this.sessionIdValue
     })
     // Small delay to ensure DOM is fully loaded
     setTimeout(() => {
       this.setupAutoplay()
+      this.startCurrentMedia()
     }, 500)
   }
 
@@ -35,6 +36,11 @@ export default class extends Controller {
     if (this.checkInterval) {
       clearInterval(this.checkInterval)
       this.checkInterval = null
+    }
+    
+    if (this.soundcloudCheckInterval) {
+      clearInterval(this.soundcloudCheckInterval)
+      this.soundcloudCheckInterval = null
     }
     
     // Clean up YouTube player if it exists
@@ -145,7 +151,27 @@ export default class extends Controller {
           console.log("HTML5 media error:", e)
         })
       })
+
+      // Setup SoundCloud autoplay detection
+      this.setupSoundCloudAutoplay()
     }, 500)
+  }
+
+  setupSoundCloudAutoplay() {
+    const soundcloudIframes = this.element.querySelectorAll('iframe[src*="soundcloud.com"]')
+    soundcloudIframes.forEach(iframe => {
+      console.log("Setting up SoundCloud autoplay detection")
+      // SoundCloud doesn't have a reliable end event, so use periodic check
+      this.soundcloudCheckInterval = setInterval(() => {
+        this.checkSoundCloudStatus(iframe)
+      }, 5000)
+    })
+  }
+
+  checkSoundCloudStatus(iframe) {
+    // This is a basic fallback - SoundCloud's API is limited in embeds
+    // For now, we'll rely on the periodic check in the main function
+    console.log("Checking SoundCloud status (fallback method)")
   }
 
   startPeriodicCheck() {
@@ -243,6 +269,95 @@ export default class extends Controller {
         this.playingNext = false
       }, 5000)
     })
+  }
+
+  startCurrentMedia() {
+    console.log("Attempting to start current media...")
+    
+    // Try to start YouTube video
+    this.startYouTubeVideo()
+    
+    // Try to start HTML5 media
+    this.startHTML5Media()
+  }
+
+  startYouTubeVideo() {
+    const iframe = this.element.querySelector('iframe[src*="youtube.com"]')
+    if (!iframe || !iframe.id) {
+      console.log("No YouTube iframe found")
+      return
+    }
+
+    // Wait for YouTube API to be available
+    if (window.YT && window.YT.Player) {
+      try {
+        // Try to get existing player first
+        if (iframe.contentWindow && iframe.contentWindow.postMessage) {
+          console.log("Attempting to play YouTube video via postMessage")
+          const playCommand = {
+            event: 'command',
+            func: 'playVideo',
+            args: []
+          }
+          iframe.contentWindow.postMessage(JSON.stringify(playCommand), 'https://www.youtube.com')
+        }
+      } catch (error) {
+        console.log("Error starting YouTube video:", error)
+      }
+    }
+  }
+
+  startHTML5Media() {
+    const videos = this.element.querySelectorAll('video')
+    const audios = this.element.querySelectorAll('audio')
+    
+    const allMedia = Array.from(videos).concat(Array.from(audios))
+    
+    allMedia.forEach(media => {
+      console.log("Attempting to play HTML5 media:", media.src)
+      
+      // Try to play the media
+      const playPromise = media.play()
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log("HTML5 media started playing successfully")
+          })
+          .catch(error => {
+            console.log("HTML5 media autoplay prevented by browser:", error)
+            // Show a play button or instruction to user
+            this.showPlayInstruction(media)
+          })
+      }
+    })
+  }
+
+  showPlayInstruction(media) {
+    // Create a play button overlay
+    const overlay = document.createElement('div')
+    overlay.innerHTML = `
+      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                  background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 10px; 
+                  text-align: center; z-index: 1000;">
+        <h5>▶️ Click to Play</h5>
+        <p>Browser requires user interaction to start media</p>
+        <button class="btn btn-primary btn-lg" onclick="this.parentElement.parentElement.remove(); this.closest('.autoplay-container').querySelector('video, audio').play()">
+          Play Media
+        </button>
+      </div>
+    `
+    
+    // Wrap media in a container if not already
+    if (!media.parentElement.classList.contains('autoplay-container')) {
+      const container = document.createElement('div')
+      container.classList.add('autoplay-container')
+      container.style.position = 'relative'
+      media.parentElement.insertBefore(container, media)
+      container.appendChild(media)
+    }
+    
+    media.parentElement.appendChild(overlay)
   }
 
   disconnect() {

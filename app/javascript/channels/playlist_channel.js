@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (playlistElement) {
     const playlistId = playlistElement.dataset.playlistId
+    console.log("Connecting to PlaylistChannel with ID:", playlistId)
 
     consumer.subscriptions.create({ channel: "PlaylistChannel", playlist_id: playlistId }, {
       connected() {
@@ -38,17 +39,16 @@ document.addEventListener('DOMContentLoaded', function() {
       },
 
       handleAdd(data) {
+        console.log("Adding medium with status:", data.status)
         const mediaList = document.getElementById('playlist')
-        if (mediaList) {
-          if (data.status === 'playing') {
-            // If this is the first item and it's playing, update the player
-            this.updateMediaPlayer(data.embed_code)
-          }
-          
-          // Add to appropriate section based on status
-          if (data.status === 'queued') {
-            mediaList.insertAdjacentHTML('beforeend', data.medium)
-          }
+        
+        if (data.status === 'playing') {
+          // If this is the first item and it's playing, update the player
+          this.updateMediaPlayer(data.embed_code)
+        } else if (data.status === 'queued' && mediaList) {
+          // Add to queue section
+          mediaList.insertAdjacentHTML('beforeend', data.medium)
+          console.log("Added to queue list")
         }
         
         this.updateQueueCount(data.queue_count)
@@ -201,6 +201,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (autoplayController && autoplayController.autoplay) {
           try {
             autoplayController.autoplay.setupAutoplay()
+            // Also try to start the new media
+            setTimeout(() => {
+              autoplayController.autoplay.startCurrentMedia()
+            }, 1000)
           } catch (error) {
             console.log("Error reinitializing autoplay:", error)
           }

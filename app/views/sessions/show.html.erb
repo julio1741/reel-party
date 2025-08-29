@@ -68,10 +68,17 @@
                   
                   <!-- Auto-play status indicator -->
                   <div class="mt-2">
-                    <small class="text-muted">
-                      🤖 Auto-play: <span class="text-success">Active</span>
-                      <span class="ms-2" style="font-size: 0.8em;">Will advance automatically when video ends</span>
-                    </small>
+                    <div id="autoplay-status">
+                      <button id="enable-autoplay" class="btn btn-success btn-sm" onclick="this.style.display='none'; document.getElementById('autoplay-enabled').style.display='block'; document.querySelector('[data-controller*=autoplay]').autoplay?.startCurrentMedia()">
+                        ▶️ Enable Auto-Play
+                      </button>
+                      <div id="autoplay-enabled" style="display: none;">
+                        <small class="text-muted">
+                          🤖 Auto-play: <span class="text-success">Active</span>
+                          <span class="ms-2" style="font-size: 0.8em;">Will advance automatically when video ends</span>
+                        </small>
+                      </div>
+                    </div>
                   </div>
                 <% end %>
               </div>

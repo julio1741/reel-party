@@ -36,18 +36,18 @@ module MediaHelper
     when 'youtube', 'youtube_music'
       video_id = extract_youtube_id(url)
       return "Invalid YouTube URL" unless video_id
-      "<iframe id='youtube-player-#{video_id}' width='100%' height='315' src='https://www.youtube.com/embed/#{video_id}?enablejsapi=1&rel=0&modestbranding=1&origin=#{ENV['ORIGIN'] || 'http://localhost:3100'}' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>"
+      "<iframe id='youtube-player-#{video_id}' width='100%' height='315' src='https://www.youtube.com/embed/#{video_id}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&origin=#{ENV['ORIGIN'] || 'http://localhost:3100'}' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>"
     when 'vimeo'
       video_id = extract_vimeo_id(url)
       return "Invalid Vimeo URL" unless video_id
-      "<iframe src='https://player.vimeo.com/video/#{video_id}?autoplay=0' width='100%' height='360' frameborder='0' allow='autoplay; fullscreen' allowfullscreen></iframe>"
+      "<iframe src='https://player.vimeo.com/video/#{video_id}?autoplay=1' width='100%' height='360' frameborder='0' allow='autoplay; fullscreen' allowfullscreen></iframe>"
     when 'soundcloud'
       encoded_url = CGI.escape(url)
-      "<iframe width='100%' height='166' scrolling='no' frameborder='no' src='https://w.soundcloud.com/player/?url=#{encoded_url}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true'></iframe>"
+      "<iframe width='100%' height='166' scrolling='no' frameborder='no' src='https://w.soundcloud.com/player/?url=#{encoded_url}&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true'></iframe>"
     when 'spotify'
       track_id = extract_spotify_id(url)
       return "Invalid Spotify URL" unless track_id
-      "<iframe src='https://open.spotify.com/embed/track/#{track_id}' width='100%' height='152' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>"
+      "<iframe src='https://open.spotify.com/embed/track/#{track_id}?utm_source=generator&theme=0' width='100%' height='152' frameborder='0' allowfullscreen='' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' loading='lazy'></iframe>"
     when 'tiktok'
       # TikTok embeds are tricky, let's use a simpler approach
       "<div class='alert alert-info text-center'><strong>TikTok Video</strong><br><small>#{url}</small><br><a href='#{url}' target='_blank' class='btn btn-sm btn-dark mt-2'>Open in TikTok</a></div>"
@@ -56,9 +56,9 @@ module MediaHelper
       return "Invalid Instagram URL" unless post_id
       "<blockquote class='instagram-media' data-instgrm-permalink='#{url}' data-instgrm-version='14' style='background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);'></blockquote><script async src='//www.instagram.com/embed.js'></script>"
     when 'video_file'
-      "<video width='100%' height='315' controls preload='metadata'><source src='#{url}' type='video/mp4'>Your browser does not support the video tag.</video>"
+      "<video width='100%' height='315' controls autoplay preload='metadata'><source src='#{url}' type='video/mp4'>Your browser does not support the video tag.</video>"
     when 'audio_file'
-      "<audio controls preload='metadata' style='width: 100%;'><source src='#{url}' type='audio/mpeg'>Your browser does not support the audio tag.</audio>"
+      "<audio controls autoplay preload='metadata' style='width: 100%;'><source src='#{url}' type='audio/mpeg'>Your browser does not support the audio tag.</audio>"
     else
       "<div class='alert alert-warning text-center'><strong>Unsupported Platform</strong><br><small>#{url}</small><br><a href='#{url}' target='_blank' class='btn btn-sm btn-primary mt-2'>Open Link</a></div>"
     end
