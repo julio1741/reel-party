@@ -46,8 +46,21 @@ document.addEventListener('DOMContentLoaded', function() {
           // If this is the first item and it's playing, update the player
           this.updateMediaPlayer(data.embed_code)
         } else if (data.status === 'queued' && mediaList) {
-          // Add to queue section
-          mediaList.insertAdjacentHTML('beforeend', data.medium)
+          // Add to queue section - create new card format for new design
+          const newMediaCard = `
+            <div class="card mb-2 border-0 bg-light">
+              <div class="card-body p-2">
+                <div class="d-flex align-items-center">
+                  <span class="badge bg-info me-2">#${data.position || '?'}</span>
+                  <div class="flex-grow-1">
+                    <small class="fw-bold">${data.display_title || data.title || 'Unknown'}</small><br>
+                    <small class="text-muted">by ${data.added_by || 'Unknown'}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          mediaList.insertAdjacentHTML('beforeend', newMediaCard);
           console.log("Added to queue list")
         }
         
@@ -186,9 +199,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
       moveToCompleted(currentPlayingId) {
         // Find the current playing item in the queue and remove it
-        const queueElement = document.querySelector(`#playlist #medium-${currentPlayingId}`)
-        if (queueElement) {
-          queueElement.remove()
+        // In the new design, we need to find by position or other identifier
+        const queueContainer = document.getElementById('playlist')
+        if (queueContainer) {
+          // Remove the first item (which should be the current playing)
+          const firstCard = queueContainer.querySelector('.card')
+          if (firstCard) {
+            firstCard.remove()
+          }
         }
         
         // Don't add to completed section here - let the backend handle it

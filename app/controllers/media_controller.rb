@@ -37,6 +37,9 @@ class MediaController < ApplicationController
           embed_code: @medium.embed_code,
           position: @medium.position,
           status: @medium.status,
+          title: @medium.title,
+          display_title: @medium.display_title,
+          added_by: @medium.added_by,
           queue_count: @playlist.total_in_queue,
           current_playing: @playlist.current_playing&.id
         }
