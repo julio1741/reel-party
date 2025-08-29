@@ -1,7 +1,31 @@
 <!-- app/views/sessions/show.html.erb -->
 <div class="container mt-5">
   <h1 class="text-center mb-4">Session: <%= @session.host_name %></h1>
-  <h4 class="text-center mb-4">Share this session ID: <%= @session.id %></h4>
+  <div class="text-center mb-4">
+    <% if @user_role == 'host' %>
+      <h4>Session ID: <%= @session.id %></h4>
+      <div class="mt-2">
+        <small class="text-muted">Share URLs:</small><br>
+        <div class="btn-group btn-group-sm" role="group">
+          <button class="btn btn-outline-primary" onclick="copyToClipboard('<%= request.base_url %>/sessions/<%= @session.id %>?role=guest')">
+            📝 Guest Link (Add Only)
+          </button>
+          <button class="btn btn-outline-success" onclick="copyToClipboard('<%= request.base_url %>/sessions/<%= @session.id %>?role=guest&listen=true')">
+            🎵 Guest + Listen
+          </button>
+        </div>
+      </div>
+    <% else %>
+      <h4>🎵 Joining Session: <%= @session.host_name %></h4>
+      <div class="alert alert-info">
+        <% if @remote_listen %>
+          <strong>🎧 Guest Mode:</strong> You can add songs and listen remotely
+        <% else %>
+          <strong>📝 Guest Mode:</strong> You can add songs to the playlist
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 
   <div class="row justify-content-center">
     <div class="col-md-8">
@@ -13,7 +37,16 @@
             <div class="col-md-6">
               <div class="mb-3">
                 <%= form.label :added_by, 'Your Name', class: 'form-label' %>
-                <%= form.text_field :added_by, class: 'form-control', required: true, placeholder: "Who's adding this?" %>
+                <div class="input-group">
+                  <%= form.text_field :added_by, 
+                      class: 'form-control', 
+                      required: true, 
+                      placeholder: "Who's adding this?",
+                      id: 'user-name-field' %>
+                  <span class="input-group-text d-none" id="name-saved-indicator">
+                    <small class="text-success">✓ Saved</small>
+                  </span>
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -44,6 +77,7 @@
       </div>
 
       <!-- Currently Playing Section -->
+      <% if @user_role == 'host' || @remote_listen %>
       <div class="row justify-content-center mt-5">
         <div class="col-md-10">
           <div class="card border-warning">
@@ -84,7 +118,7 @@
               </div>
               <hr>
               <div id="current-media-content" 
-                   data-controller="autoplay" 
+                   <% if @user_role == 'host' || @remote_listen %>data-controller="autoplay"<% end %>
                    data-autoplay-session-id-value="<%= @session.id %>">
                 <% if @current_playing %>
                   <div class="d-flex align-items-center">
@@ -107,6 +141,7 @@
           </div>
         </div>
       </div>
+      <% end %>
 
       <!-- Queue Section -->
       <div class="row mt-4">
@@ -144,3 +179,46 @@
     </div>
   </div>
 </div>
+
+<script>
+// Load saved name on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const nameField = document.getElementById('user-name-field');
+  const indicator = document.getElementById('name-saved-indicator');
+  
+  if (nameField) {
+    const savedName = localStorage.getItem('reelPartyUserName');
+    if (savedName) {
+      nameField.value = savedName;
+      if (indicator) indicator.classList.remove('d-none');
+    }
+    
+    // Save name when it changes
+    nameField.addEventListener('input', function() {
+      if (this.value.trim()) {
+        localStorage.setItem('reelPartyUserName', this.value.trim());
+        if (indicator) indicator.classList.remove('d-none');
+      } else {
+        if (indicator) indicator.classList.add('d-none');
+      }
+    });
+  }
+});
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(function() {
+    // Show success message
+    const toast = document.createElement('div');
+    toast.className = 'alert alert-success position-fixed';
+    toast.style.top = '20px';
+    toast.style.right = '20px';
+    toast.style.zIndex = '9999';
+    toast.innerHTML = '✅ Link copied to clipboard!';
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 2000);
+  });
+}
+</script>

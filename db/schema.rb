@@ -44,6 +44,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_29_202602) do
     t.string "host_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "user_role", default: "host"
+    t.boolean "allow_remote_listening", default: false
   end
 
   add_foreign_key "media", "playlists"

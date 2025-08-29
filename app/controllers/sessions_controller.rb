@@ -17,6 +17,9 @@ class SessionsController < ApplicationController
 
   def show
     @session = Session.find(params[:id])
+    @user_role = params[:role] || 'host'  # Default to host for session creator
+    @remote_listen = params[:listen] == 'true'
+    
     @new_media = Medium.new
     @playlist = @session.playlist
     @current_playing = @playlist&.current_playing
